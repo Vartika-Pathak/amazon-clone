@@ -16,8 +16,12 @@ export function AuthProvider({ children }) {
     return res.data
   }
 
-  const register = async (fullName, email, password) => {
-    const res = await client.post('/api/auth/register', { fullName, email, password })
+  const requestSignupOtp = async (fullName, email, password) => {
+    return client.post('/api/auth/request-otp', { fullName, email, password })
+  }
+
+  const register = async (fullName, email, password, otp) => {
+    const res = await client.post('/api/auth/verify-otp', { fullName, email, password, otp })
     persist(res.data)
     return res.data
   }
@@ -37,7 +41,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, requestSignupOtp, register, logout }}>
       {children}
     </AuthContext.Provider>
   )

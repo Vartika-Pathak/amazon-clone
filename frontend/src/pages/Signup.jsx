@@ -7,9 +7,11 @@ export default function Signup() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [otp, setOtp] = useState('')
+  const [otpSent, setOtpSent] = useState(false)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
-  const { register } = useAuth()
+  const { requestSignupOtp, register } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -29,8 +31,17 @@ export default function Signup() {
     }
     setLoading(true)
     try {
-      await register(fullName, email, password)
-      navigate('/')
+      if (!otpSent) {
+        await requestSignupOtp(fullName, email, password)
+        setOtpSent(true)
+      } else {
+        if (!/^\d{6}$/.test(otp)) {
+          setError('Enter the 6-digit verification code sent to your email.')
+          return
+        }
+        await register(fullName, email, password, otp)
+        navigate('/')
+      }
     } catch (err) {
       setError(err.response?.data?.error || 'Sign up failed.')
     } finally {
@@ -58,6 +69,11 @@ export default function Signup() {
                 className="w-full border border-gray-500 rounded px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+          {otpSent && <div>
+            <label className="block text-base font-bold mb-1">Email verification code</label>
+            <input type="text" inputMode="numeric" value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} required maxLength={6} placeholder="Enter 6-digit code" className="w-full border border-gray-500 rounded px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <p className="text-xs text-gray-500 mt-1">Check your email. The code expires in 10 minutes.</p>
+          </div>}
           <div>
               <label className="block text-base font-bold mb-1">Email</label>
             <input
@@ -99,7 +115,7 @@ export default function Signup() {
             disabled={loading}
               className="w-full bg-[#ffd814] hover:bg-[#f7ca00] py-3 rounded-full font-medium disabled:opacity-50"
           >
-            {loading ? 'Creating account...' : 'Create account'}
+            {loading ? (otpSent ? 'Verifying...' : 'Sending code...') : (otpSent ? 'Verify and create account' : 'Continue')}
           </button>
             </form>
             <p className="text-sm leading-5 mt-5">By continuing, you agree to Amazon.clone's <a href="#terms" className="text-blue-700 hover:underline">Conditions of Use</a> and <a href="#privacy" className="text-blue-700 hover:underline">Privacy Notice</a>.</p>

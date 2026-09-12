@@ -28,6 +28,12 @@ public class AuthDtos {
         public String password;
     }
 
+    public static class VerifyOtpRequest extends RegisterRequest {
+        @NotBlank
+        @Size(min = 6, max = 6, message = "OTP must be 6 digits")
+        public String otp;
+    }
+
     public static class AuthResponse {
         public String token;
         public String email;
