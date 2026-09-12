@@ -1,10 +1,5 @@
-services:
-  - type: web
-    name: amazon-clone-api
-    runtime: docker
-    rootDir: backend
-    dockerfilePath: ./Dockerfile
-    plan: free
+envVarGroups:
+  - name: amazon-clone-api-env
     envVars:
       - key: JAVA_VERSION
         value: "17"
@@ -24,6 +19,20 @@ services:
         sync: false
       - key: MAIL_FROM
         sync: false
+  - name: amazon-clone-web-env
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+
+services:
+  - type: web
+    name: amazon-clone-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - fromGroup: amazon-clone-api-env
 
   - type: web
     name: amazon-clone-web
@@ -37,5 +46,4 @@ services:
         source: /*
         destination: /index.html
     envVars:
-      - key: VITE_API_URL
-        sync: false
+      - fromGroup: amazon-clone-web-env
