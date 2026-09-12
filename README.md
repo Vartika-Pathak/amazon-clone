@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # amazon-clone
 
 A scoped rebuild of Amazon.com's core shopping flow: browse, search/filter, product detail, cart, checkout, and order history.
@@ -70,3 +71,6 @@ Runs on `http://localhost:5173`.
 ## `.agent-logs/`
 
 This repo includes AI-assisted work; agent capture logs live in `.agent-logs/` per the assignment's disclosure requirement.
+=======
+# amazon-clone
+>>>>>>> 7ad91ced4f9b75cfa1dca771cd28c15928cb5eff
